@@ -1,0 +1,21 @@
+{
+  "name": "shortk",
+  "version": "1.0.0",
+  "description": "CLI to manage short commands as shell aliases",
+  "main": "bin/index.js",
+  "bin": {
+    "shortk": "./bin/index.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "cli",
+    "alias",
+    "shorthand",
+    "productivity"
+  ],
+  "author": "",
+  "license": "ISC"
+}
