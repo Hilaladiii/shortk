@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 
 # shortk install script
-# Usage: curl -sSL https://raw.githubusercontent.com/user/shortk/main/install.sh | bash
+# Usage: curl -sSL https://raw.githubusercontent.com/username/shortk/main/install.sh | bash
 
 set -e
+
+# --- CONFIGURATION ---
+REPO="username/shortk" # CHANGE THIS to your GitHub username/repo
+# ---------------------
 
 # Detect OS and Architecture
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
+
+case $OS in
+    darwin) OS="darwin" ;;
+    linux)  OS="linux" ;;
+    *) echo "Unsupported OS: $OS"; exit 1 ;;
+esac
 
 case $ARCH in
     x86_64) ARCH="amd64" ;;
@@ -15,38 +25,51 @@ case $ARCH in
     *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-# Hypothetical download URL
-# URL="https://github.com/user/shortk/releases/latest/download/shortk-${OS}-${ARCH}"
+BINARY_NAME="shortk-${OS}-${ARCH}"
 
-# For now, since we are in the repo, let's assume we build it
-# If not in repo (curl | bash), download source to a temp dir
-if [ ! -f "main.go" ]; then
-    echo "Downloading source code..."
-    TMP_DIR=$(mktemp -d)
-    # We use a placeholder repo URL
-    git clone --depth 1 https://github.com/username/shortk.git "$TMP_DIR"
-    cd "$TMP_DIR"
+echo "Checking for latest release of shortk..."
+
+# Try to get the latest release version from GitHub API
+LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+if [ -n "$LATEST_RELEASE" ]; then
+    echo "Found version $LATEST_RELEASE. Downloading $BINARY_NAME..."
+    DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_RELEASE}/${BINARY_NAME}"
+    
+    if curl -L --fail "$DOWNLOAD_URL" -o shortk; then
+        echo "Successfully downloaded binary."
+    else
+        echo "Failed to download pre-built binary. Falling back to source build..."
+        LATEST_RELEASE="" # Trigger fallback
+    fi
 fi
 
-if command -v go >/dev/null 2>&1; then
-    echo "Building shortk from source..."
-    go build -o shortk main.go
-else
-    echo "Error: Go is not installed. Cannot build from source."
-    echo "Please install Go or download a pre-built binary."
-    exit 1
+# Fallback: Build from source if download failed or no release found
+if [ -z "$LATEST_RELEASE" ]; then
+    if command -v go >/dev/null 2>&1; then
+        if [ ! -f "main.go" ]; then
+            echo "Cloning source code for build..."
+            TMP_DIR=$(mktemp -d)
+            git clone --depth 1 "https://github.com/${REPO}.git" "$TMP_DIR"
+            cd "$TMP_DIR"
+        fi
+        echo "Building shortk from source..."
+        go build -o shortk main.go
+    else
+        echo "Error: Could not download pre-built binary and Go is not installed."
+        echo "Please ensure you have set the correct REPO in this script or install Go."
+        exit 1
+    fi
 fi
 
-# Install to ~/bin if it exists and is in PATH, otherwise /usr/local/bin
+# Determine install directory
 INSTALL_DIR="$HOME/.local/bin"
 if [[ ! ":$PATH:" == *":$INSTALL_DIR:"* ]]; then
     INSTALL_DIR="/usr/local/bin"
 fi
 
 echo "Installing to $INSTALL_DIR..."
-if [ ! -d "$INSTALL_DIR" ]; then
-    mkdir -p "$INSTALL_DIR"
-fi
+mkdir -p "$INSTALL_DIR"
 
 if [ -w "$INSTALL_DIR" ]; then
     mv shortk "$INSTALL_DIR/shortk"

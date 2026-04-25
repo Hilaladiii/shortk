@@ -22,9 +22,16 @@ curl -sSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | 
 ```
 
 Reload shell to apply changes:
-
 ```bash
 source ~/.zshrc # or source ~/.bashrc
+```
+
+## Updating
+
+To update to the latest version, simply run the installation command again. It will automatically fetch the latest pre-built binary from GitHub Releases.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/username/shortk/main/install.sh | bash
 ```
 
 ## Uninstallation
@@ -90,7 +97,16 @@ shortk remove [TAB]
 # Suggestions: dcu db migrate
 ```
 
-### 5. Check Status
+### 5. Check Version
+
+Check which version of `shortk` you are currently running.
+
+```bash
+shortk version
+# Output: shortk v1.0.0
+```
+
+### 6. Check Status
 
 Find out where a shortcut is defined (Global or Local) and if a local shortcut is overriding a global one.
 

@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var Version = "dev"
+
 func ShowHelp() {
 	fmt.Println(`
 Usage: shortk <command> [args]
@@ -20,6 +22,7 @@ Commands:
   list                       List all short commands
   status <short>             Check if command is local or global
   completion                 Generate shell completion script
+  version                    Show shortk version
   help                       Show this help message
 
 Options:
@@ -257,6 +260,8 @@ func Run(args []string) {
 		} else {
 			fmt.Println("Error: <short> command is required.")
 		}
+	case "version":
+		fmt.Printf("shortk %s\n", Version)
 	case "_list-keys":
 		ListKeys()
 	case "completion":
