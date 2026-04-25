@@ -22,6 +22,7 @@ curl -sSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | 
 ```
 
 Reload shell to apply changes:
+
 ```bash
 source ~/.zshrc # or source ~/.bashrc
 ```
@@ -31,7 +32,7 @@ source ~/.zshrc # or source ~/.bashrc
 To update to the latest version, simply run the installation command again. It will automatically fetch the latest pre-built binary from GitHub Releases.
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/username/shortk/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | bash
 ```
 
 ## Uninstallation

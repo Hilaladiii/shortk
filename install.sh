@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # shortk install script
-# Usage: curl -sSL https://raw.githubusercontent.com/username/shortk/main/install.sh | bash
+# Usage: curl -sSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | bash
 
 set -e
 
 # --- CONFIGURATION ---
-REPO="username/shortk" # CHANGE THIS to your GitHub username/repo
+REPO="Hilaladiii/shortk"
 # ---------------------
 
 # Detect OS and Architecture
