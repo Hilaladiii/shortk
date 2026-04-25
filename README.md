@@ -15,28 +15,23 @@ A blazing-fast, zero-dependency command line shortcut manager written in Go.
 
 ## Installation
 
-You can install `shortk` using the provided install script:
+You can install `shortk` directly via `curl`:
 
 ```bash
-# Clone the repository
-git clone https://github.com/username/shortk.git
-cd shortk
-
-# Run the install script
-./install.sh
+curl -sSL https://raw.githubusercontent.com/username/shortk/main/install.sh | bash
 ```
 
-After installation, reload your shell profile to apply the PATH changes and autocompletion:
+Reload shell to apply changes:
 ```bash
 source ~/.zshrc # or source ~/.bashrc
 ```
 
 ## Uninstallation
 
-To completely remove `shortk`, its binary, and global configurations:
+To completely remove `shortk` and its configurations:
 
 ```bash
-./uninstall.sh
+curl -sSL https://raw.githubusercontent.com/username/shortk/main/uninstall.sh | bash
 ```
 
 *(Note: Local `.shortk` files in your projects are kept intact).*

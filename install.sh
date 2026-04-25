@@ -19,12 +19,22 @@ esac
 # URL="https://github.com/user/shortk/releases/latest/download/shortk-${OS}-${ARCH}"
 
 # For now, since we are in the repo, let's assume we build it
+# If not in repo (curl | bash), download source to a temp dir
+if [ ! -f "main.go" ]; then
+    echo "Downloading source code..."
+    TMP_DIR=$(mktemp -d)
+    # We use a placeholder repo URL
+    git clone --depth 1 https://github.com/username/shortk.git "$TMP_DIR"
+    cd "$TMP_DIR"
+fi
+
 if command -v go >/dev/null 2>&1; then
     echo "Building shortk from source..."
     go build -o shortk main.go
 else
-    echo "Go not found. In a real scenario, I would download the pre-built binary here."
-    # curl -L $URL -o shortk
+    echo "Error: Go is not installed. Cannot build from source."
+    echo "Please install Go or download a pre-built binary."
+    exit 1
 fi
 
 # Install to ~/bin if it exists and is in PATH, otherwise /usr/local/bin
