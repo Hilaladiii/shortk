@@ -18,10 +18,11 @@ A blazing-fast, zero-dependency command line shortcut manager written in Go.
 You can install `shortk` directly via `curl`:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/username/shortk/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | bash
 ```
 
 Reload shell to apply changes:
+
 ```bash
 source ~/.zshrc # or source ~/.bashrc
 ```
@@ -31,14 +32,15 @@ source ~/.zshrc # or source ~/.bashrc
 To completely remove `shortk` and its configurations:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/username/shortk/main/uninstall.sh | bash
+curl -sSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/uninstall.sh | bash
 ```
 
-*(Note: Local `.shortk` files in your projects are kept intact).*
+_(Note: Local `.shortk` files in your projects are kept intact)._
 
 ## Usage & Examples
 
 ### 1. Global Shortcuts
+
 Add a shortcut that works everywhere on your system.
 
 ```bash
@@ -50,6 +52,7 @@ dcu
 ```
 
 ### 2. Project-Local Shortcuts
+
 Add a shortcut that only works in the current directory and its subdirectories. This creates a `.shortk` file in your directory and automatically adds it to `.gitignore`.
 
 ```bash
@@ -61,6 +64,7 @@ migrate
 ```
 
 ### 3. Environment Variables Injection
+
 `shortk` automatically detects `.env` files and evaluates variables at runtime, not when you define the alias.
 
 ```bash
@@ -73,6 +77,7 @@ db
 ```
 
 ### 4. Tab Autocompletion
+
 `shortk` integrates with Bash and Zsh autocomplete.
 
 ```bash
@@ -86,6 +91,7 @@ shortk remove [TAB]
 ```
 
 ### 5. Check Status
+
 Find out where a shortcut is defined (Global or Local) and if a local shortcut is overriding a global one.
 
 ```bash
@@ -102,6 +108,7 @@ shortk status migrate
 ```
 
 ### 6. List Shortcuts
+
 View all your configured shortcuts.
 
 ```bash
@@ -113,6 +120,7 @@ shortk list --local
 ```
 
 ### 7. Remove Shortcuts
+
 Remove a configured shortcut.
 
 ```bash
@@ -124,4 +132,5 @@ shortk remove migrate --local
 ```
 
 ## License
-ISC
+
+MIT
