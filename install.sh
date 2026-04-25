@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # shortk install script
-# Usage: curl -sSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | bash
 
 set -e
 
