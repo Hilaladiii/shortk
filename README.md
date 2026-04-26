@@ -15,6 +15,8 @@ A blazing-fast, zero-dependency command line shortcut manager written in Go.
 
 ## Installation
 
+### Linux & macOS
+
 You can install `shortk` directly via `curl`:
 
 ```bash
@@ -27,20 +29,40 @@ Reload shell to apply changes:
 source ~/.zshrc # or source ~/.bashrc
 ```
 
+### Windows (PowerShell)
+
+Run the following command in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.ps1 | iex
+```
+
 ## Updating
 
 To update to the latest version, simply run the installation command again. It will automatically fetch the latest pre-built binary from GitHub Releases.
 
+### Linux & macOS
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.sh | bash
+```
+
+### Windows
+```powershell
+irm https://raw.githubusercontent.com/Hilaladiii/shortk/main/install.ps1 | iex
 ```
 
 ## Uninstallation
 
 To completely remove `shortk` and its configurations:
 
+### Linux & macOS
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Hilaladiii/shortk/main/uninstall.sh | bash
+```
+
+### Windows
+```powershell
+irm https://raw.githubusercontent.com/Hilaladiii/shortk/main/uninstall.ps1 | iex
 ```
 
 _(Note: Local `.shortk` files in your projects are kept intact)._
