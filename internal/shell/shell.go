@@ -48,7 +48,7 @@ while [ "$dir" != "/" ] && [ "$dir" != "." ]; do
     LOCAL_CMD=$(awk -F'=' -v k="$SHORT" '$1==k {sub(/^[^=]+=/,""); print; exit}' "$dir/.shortk")
     if [ -n "$LOCAL_CMD" ]; then
       load_env "$dir/.env"
-      eval "$LOCAL_CMD \"$@\""
+      eval "$LOCAL_CMD" '"$@"'
       exit $?
     fi
   fi
@@ -57,7 +57,7 @@ done
 
 if [ -n "$GLOBAL_CMD" ] && [ "$GLOBAL_CMD" != "undefined" ]; then
   load_env "$PWD/.env"
-  eval "$GLOBAL_CMD \"$@\""
+  eval "$GLOBAL_CMD" '"$@"'
 else
   echo "shortk: '$SHORT' is not defined globally and no local override found."
   exit 1
