@@ -146,50 +146,53 @@ func InitShellProfile() error {
 	endMarker := "# >>> shortk initialize >>>"
 
 	for _, profile := range profiles {
-		if _, err := os.Stat(profile); err == nil {
-			data, err := os.ReadFile(profile)
-			if err != nil {
-				continue
-			}
-			content := string(data)
+		// Ensure profile directory exists
+		profileDir := filepath.Dir(profile)
+		if _, err := os.Stat(profileDir); os.IsNotExist(err) {
+			os.MkdirAll(profileDir, 0755)
+		}
 
-			var integrationCode string
-			if strings.HasSuffix(profile, ".ps1") {
-				integrationCode = fmt.Sprintf("\n\n%s\n$env:PATH = \"%s;\" + $env:PATH\nshortk completion | Out-String | Invoke-Expression\n%s\n", startMarker, BinDir, endMarker)
-			} else {
-				integrationCode = fmt.Sprintf("\n\n%s\nexport PATH=\"%s:$PATH\"\nsource <(shortk completion)\n%s\n", startMarker, BinDir, endMarker)
-			}
-			
-			if strings.Contains(content, startMarker) {
-				// Replace
-				lines := strings.Split(content, "\n")
-				var newLines []string
-				inside := false
-				for _, line := range lines {
-					if strings.Contains(line, startMarker) {
-						inside = true
-						newLines = append(newLines, integrationCode)
-						continue
-					}
-					if strings.Contains(line, endMarker) {
-						inside = false
-						continue
-					}
-					if !inside {
-						newLines = append(newLines, line)
-					}
+		var content string
+		if data, err := os.ReadFile(profile); err == nil {
+			content = string(data)
+		}
+
+		var integrationCode string
+		if strings.HasSuffix(profile, ".ps1") {
+			integrationCode = fmt.Sprintf("\n\n%s\n$env:PATH = \"%s;\" + $env:PATH\nshortk completion | Out-String | Invoke-Expression\n%s\n", startMarker, BinDir, endMarker)
+		} else {
+			integrationCode = fmt.Sprintf("\n\n%s\nexport PATH=\"%s:$PATH\"\nsource <(shortk completion)\n%s\n", startMarker, BinDir, endMarker)
+		}
+		
+		if strings.Contains(content, startMarker) {
+			// Replace
+			lines := strings.Split(content, "\n")
+			var newLines []string
+			inside := false
+			for _, line := range lines {
+				if strings.Contains(line, startMarker) {
+					inside = true
+					newLines = append(newLines, integrationCode)
+					continue
 				}
-				content = strings.Join(newLines, "\n")
-			} else {
-				content += integrationCode
+				if strings.Contains(line, endMarker) {
+					inside = false
+					continue
+				}
+				if !inside {
+					newLines = append(newLines, line)
+				}
 			}
-			
-			err = os.WriteFile(profile, []byte(content), 0644)
-			if err != nil {
-				fmt.Printf("Error updating %s: %v\n", profile, err)
-			} else {
-				fmt.Printf("Updated %s\n", profile)
-			}
+			content = strings.Join(newLines, "\n")
+		} else {
+			content += integrationCode
+		}
+		
+		err := os.WriteFile(profile, []byte(content), 0644)
+		if err != nil {
+			fmt.Printf("Error updating %s: %v\n", profile, err)
+		} else {
+			fmt.Printf("Updated %s\n", profile)
 		}
 	}
 	fmt.Println("\nIMPORTANT: To apply changes, please restart your terminal or run source on your profile.")
