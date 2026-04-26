@@ -262,6 +262,12 @@ func Run(args []string) {
 		}
 	case "version":
 		fmt.Printf("shortk %s\n", Version)
+	case "_exec":
+		if len(rest) >= 1 {
+			shell.ExecuteAlias(rest[0], rest[1:])
+		} else {
+			fmt.Println("Error: <short> command is required.")
+		}
 	case "_list-keys":
 		ListKeys()
 	case "completion":

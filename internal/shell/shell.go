@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"shortk/internal/config"
 	"strings"
 )
@@ -21,6 +22,8 @@ func CreateWrapper(short, long string) error {
 	if err := EnsureBinDir(); err != nil {
 		return err
 	}
+	
+	// 1. Create bash wrapper (always, for WSL/Git Bash/Linux compatibility)
 	scriptPath := filepath.Join(BinDir, short)
 	escapedLong := strings.ReplaceAll(long, "'", "'\\''")
 
@@ -61,17 +64,47 @@ else
 fi
 `, short, escapedLong)
 
-	err := os.WriteFile(scriptPath, []byte(content), 0755)
-	return err
+	if err := os.WriteFile(scriptPath, []byte(content), 0755); err != nil {
+		return err
+	}
+
+	// 2. Create Windows wrappers
+	if runtime.GOOS == "windows" {
+		// .bat wrapper
+		batPath := scriptPath + ".bat"
+		batContent := fmt.Sprintf("@echo off\nshortk _exec \"%%~n0\" %%*\n")
+		if err := os.WriteFile(batPath, []byte(batContent), 0755); err != nil {
+			return err
+		}
+
+		// .ps1 wrapper
+		ps1Path := scriptPath + ".ps1"
+		ps1Content := fmt.Sprintf("$short = $MyInvocation.MyCommand.Name.Replace(\".ps1\", \"\")\n& shortk _exec $short $args\nexit $LASTEXITCODE\n")
+		if err := os.WriteFile(ps1Path, []byte(ps1Content), 0755); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func RemoveWrapper(short string) error {
 	scriptPath := filepath.Join(BinDir, short)
+	
+	// Remove bash wrapper
 	if _, err := os.Stat(scriptPath); err == nil {
-		return os.Remove(scriptPath)
+		os.Remove(scriptPath)
 	}
+
+	// Remove Windows wrappers
+	if runtime.GOOS == "windows" {
+		os.Remove(scriptPath + ".bat")
+		os.Remove(scriptPath + ".ps1")
+	}
+
 	return nil
 }
+
 
 func SyncWrappers() error {
 	if err := EnsureBinDir(); err != nil {
@@ -97,15 +130,20 @@ func SyncWrappers() error {
 }
 
 func InitShellProfile() error {
-	home := os.Getenv("HOME")
+	home, _ := os.UserHomeDir()
 	profiles := []string{
 		filepath.Join(home, ".zshrc"),
 		filepath.Join(home, ".bashrc"),
 	}
 
+	if runtime.GOOS == "windows" {
+		// PowerShell profiles
+		profiles = append(profiles, filepath.Join(home, "Documents", "PowerShell", "Microsoft.PowerShell_profile.ps1"))
+		profiles = append(profiles, filepath.Join(home, "Documents", "WindowsPowerShell", "Microsoft.PowerShell_profile.ps1"))
+	}
+
 	startMarker := "# <<< shortk initialize <<<"
 	endMarker := "# >>> shortk initialize >>>"
-	integrationCode := fmt.Sprintf("\n\n%s\nexport PATH=\"%s:$PATH\"\nsource <(shortk completion)\n%s\n", startMarker, BinDir, endMarker)
 
 	for _, profile := range profiles {
 		if _, err := os.Stat(profile); err == nil {
@@ -114,9 +152,13 @@ func InitShellProfile() error {
 				continue
 			}
 			content := string(data)
-			
-			// Remove old alias-based integration if exists
-			// (Simplified for Go port)
+
+			var integrationCode string
+			if strings.HasSuffix(profile, ".ps1") {
+				integrationCode = fmt.Sprintf("\n\n%s\n$env:PATH = \"%s;\" + $env:PATH\nshortk completion | Out-String | Invoke-Expression\n%s\n", startMarker, BinDir, endMarker)
+			} else {
+				integrationCode = fmt.Sprintf("\n\n%s\nexport PATH=\"%s:$PATH\"\nsource <(shortk completion)\n%s\n", startMarker, BinDir, endMarker)
+			}
 			
 			if strings.Contains(content, startMarker) {
 				// Replace
@@ -153,3 +195,4 @@ func InitShellProfile() error {
 	fmt.Println("\nIMPORTANT: To apply changes, please restart your terminal or run source on your profile.")
 	return nil
 }
+

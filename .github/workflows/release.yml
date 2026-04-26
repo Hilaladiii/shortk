@@ -13,8 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [linux, darwin]
+        goos: [linux, darwin, windows]
         goarch: [amd64, arm64]
+        exclude:
+          - goos: windows
+            goarch: arm64
     
     steps:
       - name: Checkout code
@@ -29,11 +32,17 @@ jobs:
 
       - name: Get version
         id: get_version
+        shell: bash
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build binary
+        shell: bash
         run: |
-          BINARY_NAME="shortk-${{ matrix.goos }}-${{ matrix.goarch }}"
+          EXT=""
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            EXT=".exe"
+          fi
+          BINARY_NAME="shortk-${{ matrix.goos }}-${{ matrix.goarch }}$EXT"
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -ldflags="-X 'shortk/internal/cli.Version=${{ steps.get_version.outputs.VERSION }}'" -o "$BINARY_NAME" main.go
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
 

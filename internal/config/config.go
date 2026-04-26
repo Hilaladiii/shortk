@@ -10,7 +10,10 @@ import (
 )
 
 var (
-	ConfigDir     = filepath.Join(os.Getenv("HOME"), ".config", "shortk")
+	ConfigDir     = func() string {
+		home, _ := os.UserHomeDir()
+		return filepath.Join(home, ".config", "shortk")
+	}()
 	AliasesFile   = filepath.Join(ConfigDir, "aliases.json")
 	LocalFilename = ".shortk"
 )
