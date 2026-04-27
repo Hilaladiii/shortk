@@ -1,8 +1,8 @@
 package autocomplete
 
-func GenerateCompletionScript() string {
+func GenerateBashCompletionScript() string {
 	return `
-# shortk completion script
+# shortk completion script for Bash/Zsh
 
 _shortk_completion() {
     local cur prev opts
@@ -61,5 +61,56 @@ if [ -n "$ZSH_VERSION" ]; then
     autoload -Uz bashcompinit && bashcompinit
     complete -F _shortk_completion shortk
 fi
+`
+}
+
+func GeneratePowerShellCompletionScript() string {
+	return `
+# shortk completion script for PowerShell
+
+$scriptBlock = {
+    param($wordToComplete, $commandAst, $cursorPosition)
+
+    $commandElements = $commandAst.CommandElements
+    $commandName = $commandElements[0].GetText()
+    
+    # Simple check for command arguments
+    # index 0 is shortk
+    # index 1 is the sub-command
+    # index 2 is the argument to the sub-command
+    
+    $opts = @("init", "add", "remove", "list", "status", "completion", "help", "version")
+
+    if ($commandElements.Count -le 2) {
+        # Suggest sub-commands
+        return $opts | Where-Object { $_ -like "$wordToComplete*" } | ForEach-Object {
+            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+        }
+    }
+
+    $subCommand = $commandElements[1].GetText()
+
+    if ($subCommand -eq "remove" -or $subCommand -eq "status") {
+        # Suggest keys
+        $keysStr = shortk _list-keys 2>$null
+        if ($keysStr) {
+            $keys = $keysStr -split " "
+            return $keys | Where-Object { $_ -like "$wordToComplete*" } | ForEach-Object {
+                [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+            }
+        }
+    }
+
+    if ($subCommand -eq "add") {
+        $addOpts = @("--local")
+        return $addOpts | Where-Object { $_ -like "$wordToComplete*" } | ForEach-Object {
+            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+        }
+    }
+
+    return $null
+}
+
+Register-ArgumentCompleter -Native -CommandName shortk -ScriptBlock $scriptBlock
 `
 }

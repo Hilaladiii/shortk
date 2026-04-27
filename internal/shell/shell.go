@@ -159,9 +159,9 @@ func InitShellProfile() error {
 
 		var integrationCode string
 		if strings.HasSuffix(profile, ".ps1") {
-			integrationCode = fmt.Sprintf("\n\n%s\n$env:PATH = \"%s;\" + $env:PATH\nshortk completion | Out-String | Invoke-Expression\n%s\n", startMarker, BinDir, endMarker)
+			integrationCode = fmt.Sprintf("\n\n%s\n$env:PATH = \"%s;\" + $env:PATH\nshortk completion powershell | Out-String | Invoke-Expression\n%s\n", startMarker, BinDir, endMarker)
 		} else {
-			integrationCode = fmt.Sprintf("\n\n%s\nexport PATH=\"%s:$PATH\"\nsource <(shortk completion)\n%s\n", startMarker, BinDir, endMarker)
+			integrationCode = fmt.Sprintf("\n\n%s\nexport PATH=\"%s:$PATH\"\nsource <(shortk completion bash)\n%s\n", startMarker, BinDir, endMarker)
 		}
 		
 		if strings.Contains(content, startMarker) {

@@ -271,7 +271,15 @@ func Run(args []string) {
 	case "_list-keys":
 		ListKeys()
 	case "completion":
-		fmt.Print(autocomplete.GenerateCompletionScript())
+		shell := "bash"
+		if len(rest) > 0 {
+			shell = rest[0]
+		}
+		if shell == "powershell" || shell == "pwsh" {
+			fmt.Print(autocomplete.GeneratePowerShellCompletionScript())
+		} else {
+			fmt.Print(autocomplete.GenerateBashCompletionScript())
+		}
 	case "help", "--help", "-h":
 		ShowHelp()
 	default:
